@@ -6,31 +6,31 @@ function currentDate() {
 
 type State = {
   today: string;
-}
+};
 
 type Props = {
-  clockName: string
-}
+  clockName: string;
+};
 
-export class Clock extends React.Component<Props, State>  {
+export class Clock extends React.Component<Props, State> {
   state = {
     today: currentDate(),
-  }
+  };
 
   timerId: number = 0;
+  isMounted = false;
 
   componentDidMount(): void {
+    this.isMounted = true;
     this.timerId = window.setInterval(() => {
-      this.setState({ today: currentDate()})
-    }, 1000)
+      if (this.isMounted) {
+        this.setState({ today: currentDate() });
+      }
+    }, 1000);
   }
 
   componentDidUpdate(prevProps: Readonly<Props>): void {
-    // eslint-disable-next-line no-console
-    console.log(this.state.today);
-    
     if (prevProps.clockName !== this.props.clockName) {
-      // eslint-disable-next-line no-console
       console.warn(
         `Renamed from ${prevProps.clockName} to ${this.props.clockName}`,
       );
@@ -38,20 +38,16 @@ export class Clock extends React.Component<Props, State>  {
   }
 
   componentWillUnmount(): void {
+    this.isMounted = false;
     window.clearInterval(this.timerId);
-    this.timerId = 0;
   }
 
   render() {
-    return(
+    return (
       <div className="Clock">
         <strong className="Clock__name">{this.props.clockName}</strong>
-
         {' time is '}
-
-        <span className="Clock__time">
-          {this.state.today}
-        </span>
+        <span className="Clock__time">{this.state.today}</span>
       </div>
     );
   }
